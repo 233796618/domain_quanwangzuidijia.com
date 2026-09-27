@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>域名合作</title>
+  <title>域名合作 - 全网最低价</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -21,8 +21,8 @@
       font-size: 26px; font-weight: 700; color: #111;
       word-break: break-all; margin: 0 0 8px;
     }
-    .puny {
-      font-size: 13px; color: #aaa; margin: 0 0 32px;
+    .sub {
+      font-size: 14px; color: #999; margin: 0 0 32px;
       word-break: break-all;
     }
     .card {
@@ -42,7 +42,7 @@
 
   <p class="label">您正在访问：</p>
   <h1 class="domain" id="domainName">加载中…</h1>
-  <p class="puny" id="punyName"></p>
+  <p class="sub" id="subName"></p>
 
   <div class="card">
     <h2>合作 / 购买咨询</h2>
@@ -54,39 +54,34 @@
 
   <script>
     (function () {
-      var host = location.hostname; // 实际拿到的可能是 punycode
+      var host = location.hostname;
+      var bare = host.replace(/^www\./, ''); // 去掉 www.
 
       // ============================================================
-      // ?? 你只需要改这一段：填上真实的邮箱和微信
+      // 👇 你只需要改这一段：填上真实的邮箱和微信
       // ============================================================
       var contactMap = {
-        // 全网最低价.com（punycode 和中文都写一份，保证能匹配）
+        // 主域名：全网最低价.com 的拼音版
+        'quanwangzuidijia.com': {
+          name:   '全网最低价.com',
+          email:  '改成你的邮箱@example.com',   // ← 改这里
+          wechat: '改成你的微信号'              // ← 改这里（没有就留空字符串 ''）
+        },
+
+        // 如果你以后还绑定了中文域名 xn--6nq0hu3d154bjz1a.com，也一起写上
         'xn--6nq0hu3d154bjz1a.com': {
           name:   '全网最低价.com',
-          email:  '233796618@qq.com',   // ← 改这里
-          wechat: 'zhongxing089'              // ← 改这里
-        },
-        '全网最低价.com': {
-          name:   '全网最低价.com',
-          email:  '233796618@qq.com',   // ← 改这里
-          wechat: 'zhongxing089'              // ← 改这里
+          email:  '改成你的邮箱@example.com',
+          wechat: '改成你的微信号'
         }
-
-        // 以后加新域名，按同样格式追加：
-        // 'otherdomain.com': {
-        //   name: 'otherdomain.com',
-        //   email: 'xx@xx.com',
-        //   wechat: 'xx'
-        // },
       };
       // ============================================================
-      // 上面这段改完就 OK，下面不用动
+      // 下面不用动
       // ============================================================
 
 
-      // 匹配：先按原始 host 找，再按去掉 www. 的找
-      var info = contactMap[host]
-              || contactMap[host.replace(/^www\./, '')];
+      // 先按完整域名匹配，再按去掉 www. 的匹配
+      var info = contactMap[host] || contactMap[bare];
 
       // 兜底
       if (!info) {
@@ -98,18 +93,17 @@
       }
 
       // 显示域名
-      var showName = info.name || host;
-      document.getElementById('domainName').textContent = showName;
+      document.getElementById('domainName').textContent = info.name || host;
 
-      // 如果是 IDN，额外用小字显示 punycode，方便对照
-      if (host !== showName) {
-        document.getElementById('punyName').textContent = '（' + host + '）';
+      // 如果显示名和真实域名不一样，用小字标出真实域名
+      if (info.name && info.name !== host) {
+        document.getElementById('subName').textContent = '（' + host + '）';
       }
 
       // 邮箱
       var emailLink = document.getElementById('emailLink');
       emailLink.href = 'mailto:' + info.email +
-        '?subject=' + encodeURIComponent('关于 ' + showName + ' 的合作咨询');
+        '?subject=' + encodeURIComponent('关于 ' + (info.name || host) + ' 的合作咨询');
       emailLink.textContent = info.email;
 
       // 微信（没填就隐藏整行）
